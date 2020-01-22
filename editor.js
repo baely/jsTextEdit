@@ -14,25 +14,6 @@ const elementToObject = function(element) {
 
 class Editor {
     _logo = {"type":"text","value":"PageIt"};
-    // _styles = [
-    //     {"action":"insertParagraph","display":"Normal","value":"p"},
-    //     {"action":"formatBlock","argument":"h1","display":"Heading 1","value":"h1"},
-    //     {"action":"formatBlock","argument":"h2","display":"Heading 2","value":"h2"},
-    //     {"action":"formatBlock","argument":"h3","display":"Heading 3","value":"h3"}
-    // ];
-    // _tools = [
-    //     {"action":"bold","display":"B"},
-    //     {"action":"italic","display":"I"},
-    //     {"action":"underline","display":"U"}
-    // ];
-    // _lists = [
-    //     {"action":"insertUnorderedList","display":"*."},
-    //     {"action":"insertOrderedList","display":"1."}
-    // ]
-    // _file = [
-    //     {"action":"publish","display":"Publish"},
-    //     {"action":"save","display":"Save"}
-    // ];
     _tools = [
         {"name":"Styles","type":"dropdown","list":[
                 {"action":"insertParagraph","display":"Normal","value":"p"},
