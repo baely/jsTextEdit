@@ -14,24 +14,45 @@ const elementToObject = function(element) {
 
 class Editor {
     _logo = {"type":"text","value":"PageIt"};
-    _styles = [
-        {"action":"insertParagraph","display":"Normal","value":"p"},
-        {"action":"formatBlock","argument":"h1","display":"Heading 1","value":"h1"},
-        {"action":"formatBlock","argument":"h2","display":"Heading 2","value":"h2"},
-        {"action":"formatBlock","argument":"h3","display":"Heading 3","value":"h3"}
-    ];
+    // _styles = [
+    //     {"action":"insertParagraph","display":"Normal","value":"p"},
+    //     {"action":"formatBlock","argument":"h1","display":"Heading 1","value":"h1"},
+    //     {"action":"formatBlock","argument":"h2","display":"Heading 2","value":"h2"},
+    //     {"action":"formatBlock","argument":"h3","display":"Heading 3","value":"h3"}
+    // ];
+    // _tools = [
+    //     {"action":"bold","display":"B"},
+    //     {"action":"italic","display":"I"},
+    //     {"action":"underline","display":"U"}
+    // ];
+    // _lists = [
+    //     {"action":"insertUnorderedList","display":"*."},
+    //     {"action":"insertOrderedList","display":"1."}
+    // ]
+    // _file = [
+    //     {"action":"publish","display":"Publish"},
+    //     {"action":"save","display":"Save"}
+    // ];
     _tools = [
-        {"action":"bold","display":"B"},
-        {"action":"italic","display":"I"},
-        {"action":"underline","display":"U"}
-    ];
-    _lists = [
-        {"action":"insertUnorderedList","display":"*."},
-        {"action":"insertOrderedList","display":"1."}
-    ]
-    _file = [
-        {"action":"publish","display":"Publish"},
-        {"action":"save","display":"Save"}
+        {"name":"Styles","type":"dropdown","list":[
+                {"action":"insertParagraph","display":"Normal","value":"p"},
+                {"action":"formatBlock","argument":"h1","display":"Heading 1","value":"h1"},
+                {"action":"formatBlock","argument":"h2","display":"Heading 2","value":"h2"},
+                {"action":"formatBlock","argument":"h3","display":"Heading 3","value":"h3"}
+            ]},
+        {"name":"Fonts","type":"buttons","list":[
+                {"action":"bold","display":"B"},
+                {"action":"italic","display":"I"},
+                {"action":"underline","display":"U"}
+            ]},
+        {"name":"Lists","type":"buttons","list":[
+                {"action":"insertUnorderedList","display":"*."},
+                {"action":"insertOrderedList","display":"1."}
+            ]},
+        {"name":"Files","type":"buttons","list":[
+                {"action":"publish","display":"Publish"},
+                {"action":"save","display":"Save"}
+            ]},
     ];
     constructor(editor, page) {
         this._doc = document;
@@ -42,7 +63,7 @@ class Editor {
 
         this._loadToolBar();
         this._loadDocument();
-        // this._document.focus();
+        this._document.focus();
     }
 
     getContents() {
@@ -54,12 +75,11 @@ class Editor {
 
         const element = tag === "SELECT" ? $(button).find(":selected") : $(button);
 
-        console.log(element);
-
-        if (tool.hasOwnProperty("argument"))
-            this._doc.execCommand(tool.action, false, tool.argument);
+        if (element.is("[data-value]"))
+            this._doc.execCommand(element.attr("data-action"), false, element.attr("data-value"));
         else
-            this._doc.execCommand(tool.action, false);
+            this._doc.execCommand(element.attr("data-action"), false);
+
     }
 
     _fileAction(action) {
@@ -113,7 +133,6 @@ class Editor {
                 .attr("data-action",option.action)
                 .attr("data-value",option.value)
                 .text(option.display)
-                .val(option.value)
                 .appendTo(section);
         }
     }
@@ -130,10 +149,21 @@ class Editor {
                 .text(this._logo.value)
                 .appendTo(this._toolbar);
 
-            const fontSection2 = this._toolbarDropdownSection(this._toolbar,"Style",this._styles);
-            const toolbarSection = this._toolbarButtonSection(this._toolbar,this._tools);
-            const listSection = this._toolbarButtonSection(this._toolbar,this._lists);
-            const fileSection = this._toolbarButtonSection(this._toolbar,this._file);
+            const self = this;
+
+            this._tools.forEach(function(section) {
+                console.log([section, self, this]);
+                switch (section.type) {
+                    case "dropdown":
+                        self._toolbarDropdownSection(self._toolbar,section.name,section.list);
+                        break;
+                    case "buttons":
+                        self._toolbarButtonSection(self._toolbar,section.list);
+                        break;
+                    default:
+                        break;
+                }
+            });
         }
     }
 
