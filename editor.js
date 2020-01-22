@@ -13,6 +13,7 @@ const elementToObject = function(element) {
 };
 
 class Editor {
+    _customActions = ["_publish", "_save"];
     _logo = {"type":"text","value":"PageIt"};
     _tools = [
         {"name":"Styles","type":"dropdown","list":[
@@ -31,8 +32,8 @@ class Editor {
                 {"action":"insertOrderedList","display":"1."}
             ]},
         {"name":"Files","type":"buttons","list":[
-                {"action":"publish","display":"Publish"},
-                {"action":"save","display":"Save"}
+                {"action":"_publish","display":"Publish"},
+                {"action":"_save","display":"Save"}
             ]},
     ];
     constructor(editor, page) {
@@ -56,6 +57,13 @@ class Editor {
 
         const element = tag === "SELECT" ? $(button).find(":selected") : $(button);
 
+        console.log(element.attr("data-action"));
+
+        if (this._customActions.indexOf(element.attr("data-action")) !== -1) {
+            this._customAction(element.attr("data-action"));
+            return false;
+        }
+
         if (element.is("[data-value]"))
             this._doc.execCommand(element.attr("data-action"), false, element.attr("data-value"));
         else
@@ -63,7 +71,7 @@ class Editor {
 
     }
 
-    _fileAction(action) {
+    _customAction(action) {
         switch(action) {
             case "publish":
                 this._page.publish();
@@ -129,8 +137,6 @@ class Editor {
                 .attr("href","/")
                 .text(this._logo.value)
                 .appendTo(this._toolbar);
-
-            const self = this;
 
             this._tools.forEach(function(section) {
                 console.log([section, self, this]);
